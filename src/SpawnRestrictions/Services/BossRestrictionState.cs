@@ -6,7 +6,6 @@ internal sealed class BossRestrictionState
     public int RequiredPlayers { get; private set; }
     public int OnlinePlayers { get; private set; }
     public bool AllowsBosses => IsReady && (RequiredPlayers == 0 || OnlinePlayers >= RequiredPlayers);
-    public bool ShouldDespawn => IsReady && !AllowsBosses;
 
     // stores a validated snapshot from the host
     public void Set(int requiredPlayers, int onlinePlayers)

@@ -12,8 +12,8 @@ internal sealed class BossRestrictionSettings
         RequiredOnlinePlayers = config.Bind(
             "Boss restrictions", "Required online players", 2,
             new ConfigDescription(
-                "Minimum online players for bosses. Only the host/server value is used. " +
-                "0 disables the restriction. Existing bosses despawn below the requirement.",
+                "Minimum online players to summon bosses at altars. Only the host/server value is used. " +
+                "0 disables the restriction. Existing bosses are unaffected.",
                 new AcceptableValueRange<int>(0, int.MaxValue)));
     }
 }

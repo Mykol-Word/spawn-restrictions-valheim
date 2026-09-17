@@ -16,7 +16,6 @@ public sealed class SpawnRestrictionsPlugin : BaseUnityPlugin
 
     private Harmony _harmony;
     private ServerRuleSync _sync;
-    private BossCleanupService _cleanup;
     private float _nextUpdate;
 
     // initializes the host rule and the patches required on every peer
@@ -24,14 +23,13 @@ public sealed class SpawnRestrictionsPlugin : BaseUnityPlugin
     {
         var state = new BossRestrictionState();
         _sync = new ServerRuleSync(new BossRestrictionSettings(Config), state);
-        _cleanup = new BossCleanupService(state, Logger);
         BossPatches.Initialize(state, _sync);
         _harmony = new Harmony(PluginGuid);
         _harmony.CreateClassProcessor(typeof(BossPatches)).Patch();
         Logger.LogInfo("Spawn Restrictions loaded. Install this version on the host/server and every client.");
     }
 
-    // synchronizes the server rule and enforces it twice per second
+    // synchronizes the server summoning rule twice per second
     private void Update()
     {
         if (ZNet.instance == null || ZNet.instance.HaveStopped || Time.unscaledTime < _nextUpdate)
@@ -41,7 +39,6 @@ public sealed class SpawnRestrictionsPlugin : BaseUnityPlugin
 
         _nextUpdate = Time.unscaledTime + 0.5f;
         _sync.Broadcast();
-        _cleanup.RemoveBlockedBosses();
     }
 
     // removes this plugin's patches and releases their services
