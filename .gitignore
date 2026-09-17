@@ -3,3 +3,7 @@ bin/
 obj/
 .vs/
 /tests/
+AGENTS.md
+
+# local git hooks
+.githooks/*
