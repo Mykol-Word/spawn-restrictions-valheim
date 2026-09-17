@@ -1,0 +1,5 @@
+reference/valheim-decompiled/
+bin/
+obj/
+.vs/
+/tests/
