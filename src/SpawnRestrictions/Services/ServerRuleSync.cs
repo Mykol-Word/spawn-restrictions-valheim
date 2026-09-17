@@ -4,7 +4,7 @@ namespace SpawnRestrictions.Services;
 
 internal sealed class ServerRuleSync
 {
-    private const string StateRpc = "SpawnRestrictions.State.v1";
+    private const string StateRpc = "SpawnRestrictions.State.v2";
     private readonly BossRestrictionSettings _settings;
     private readonly BossRestrictionState _state;
 
@@ -18,7 +18,7 @@ internal sealed class ServerRuleSync
     // registers the state message before the peer handshake
     public void RegisterPeer(ZNetPeer peer)
     {
-        peer.m_rpc.Register<int, int>(StateRpc, ReceiveState);
+        peer.m_rpc.Register<int, int, bool>(StateRpc, ReceiveState);
     }
 
     // refreshes host state without consulting client configuration
@@ -27,7 +27,8 @@ internal sealed class ServerRuleSync
         var network = ZNet.instance;
         if (network != null && network.IsServer())
         {
-            _state.Set(_settings.RequiredOnlinePlayers.Value, network.GetNrOfPlayers());
+            _state.Set(_settings.RequiredOnlinePlayers.Value, network.GetNrOfPlayers(),
+                _settings.AllowDefeatedBosses.Value);
         }
     }
 
@@ -45,13 +46,13 @@ internal sealed class ServerRuleSync
         {
             if (peer.IsReady())
             {
-                peer.m_rpc.Invoke(StateRpc, _state.RequiredPlayers, _state.OnlinePlayers);
+                peer.m_rpc.Invoke(StateRpc, _state.RequiredPlayers, _state.OnlinePlayers, _state.AllowDefeatedBosses);
             }
         }
     }
 
     // accepts rule updates only from the client's actual server connection
-    private void ReceiveState(ZRpc rpc, int requiredPlayers, int onlinePlayers)
+    private void ReceiveState(ZRpc rpc, int requiredPlayers, int onlinePlayers, bool allowDefeatedBosses)
     {
         var network = ZNet.instance;
         if (network == null || network.IsServer() || !ReferenceEquals(rpc, network.GetServerRPC()))
@@ -59,6 +60,6 @@ internal sealed class ServerRuleSync
             return;
         }
 
-        _state.Set(requiredPlayers, onlinePlayers);
+        _state.Set(requiredPlayers, onlinePlayers, allowDefeatedBosses);
     }
 }

@@ -50,7 +50,7 @@ internal static class BossPatches
     {
         if (__instance.m_useItemStands || __instance.m_bossPrefab == null ||
             __instance.m_bossItem == null || item == null ||
-            item.m_shared.m_name != __instance.m_bossItem.m_itemData.m_shared.m_name || AllowsBosses())
+            item.m_shared.m_name != __instance.m_bossItem.m_itemData.m_shared.m_name || AllowsBosses(__instance))
         {
             return true;
         }
@@ -64,7 +64,7 @@ internal static class BossPatches
     [HarmonyPatch(typeof(OfferingBowl), nameof(OfferingBowl.Interact)), HarmonyPrefix]
     private static bool Interact(OfferingBowl __instance, Humanoid user, bool hold, ref bool __result)
     {
-        if (hold || !__instance.m_useItemStands || __instance.m_bossPrefab == null || AllowsBosses())
+        if (hold || !__instance.m_useItemStands || __instance.m_bossPrefab == null || AllowsBosses(__instance))
         {
             return true;
         }
@@ -78,13 +78,14 @@ internal static class BossPatches
     [HarmonyPatch(typeof(OfferingBowl), "RPC_SpawnBoss"), HarmonyPrefix]
     private static bool SpawnBoss(OfferingBowl __instance)
     {
-        return __instance.m_bossPrefab == null || AllowsBosses();
+        return __instance.m_bossPrefab == null || AllowsBosses(__instance);
     }
 
-    // refreshes the host's count before deciding whether an altar may proceed
-    private static bool AllowsBosses()
+    // evaluates the host rule against the specific boss and current world
+    private static bool AllowsBosses(OfferingBowl bowl)
     {
         _sync.RefreshHost();
-        return _state.AllowsBosses;
+        var defeatedInWorld = _state.AllowDefeatedBosses && BossProgressionService.IsDefeated(bowl.m_bossPrefab);
+        return _state.AllowsSummoning(defeatedInWorld);
     }
 }

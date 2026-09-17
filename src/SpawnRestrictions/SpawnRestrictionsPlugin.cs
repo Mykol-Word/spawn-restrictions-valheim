@@ -12,7 +12,7 @@ public sealed class SpawnRestrictionsPlugin : BaseUnityPlugin
 {
     public const string PluginGuid = "spawnrestrictions.valheim";
     public const string PluginName = "Spawn Restrictions";
-    public const string PluginVersion = "0.1.0";
+    public const string PluginVersion = "0.2.0";
 
     private Harmony _harmony;
     private ServerRuleSync _sync;

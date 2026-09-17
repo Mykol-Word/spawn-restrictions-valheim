@@ -14,14 +14,19 @@ A BepInEx 5 / Harmony mod that requires enough players online to summon bosses a
 ```ini
 [Boss restrictions]
 Required online players = 2
+Allow defeated bosses = true
 ```
 
 The default is **2**. Use `0` to disable restrictions. Existing config values from an earlier build are preserved. A listen host counts as a player; a dedicated server process does not. Players can be anywhere in the world. Client config files are ignored while connected to a server.
 
+`Allow defeated bosses` defaults to **true**: a boss whose defeat key is set in the current world can be summoned below the player requirement. Set it to **false** to apply the requirement to every boss, as before. Progress in another world or on a player's character does not grant the exemption. Bosses without a defeat key remain subject to the requirement.
+
+Update the host/server and all clients to version **0.2.0** together for the new synced option.
+
 ## Behavior
 
 - At or above the requirement, normal altar summoning is preserved.
-- Below it, altar attempts show a message and stop before consuming inventory or item-stand offerings. The altar owner checks the rule again when handling the spawn request.
+- Below it, attempts to summon undefeated bosses show a message and stop before consuming offerings. With `Allow defeated bosses = false`, this applies to every boss. The altar owner checks the rule again when handling the spawn request.
 - Existing bosses and ongoing fights are unaffected when players disconnect. Previously saved bosses are also left alone.
 - A summon already accepted by the altar finishes normally even if the player count drops during its spawn delay.
 - Restrictions apply to altar summoning. Console commands and other spawn paths are not intercepted.
@@ -54,7 +59,8 @@ dotnet tests/bin/Release/net10.0/SpawnRestrictions.Tests.dll `
 Before using a real world, test on a disposable world with the mod on both peers:
 
 1. Set the host requirement to 2 and the client to 99. With two players, summoning should work regardless of who owns the altar.
-2. Set the host requirement to 3 and the client to 0. With two players, inventory and item-stand offerings should remain untouched and a message should explain the requirement.
-3. With the host requirement at 2, summon a boss and disconnect one player. The boss should remain and the fight should continue, while new altar summons are blocked.
+2. Set the host requirement to 3 and the client to 0. With two players, undefeated bosses should be blocked without consuming inventory or item-stand offerings, and a message should explain the requirement.
+3. With the host requirement at 2, summon a boss and disconnect one player. The boss should remain and the fight should continue, while new summons of undefeated bosses are blocked.
 4. Set the host requirement to 0. All normal summoning should work.
-5. Repeat on a dedicated server and at a distant altar, then reconnect to a different host to verify the old rule is discarded.
+5. Below the requirement, re-summon a boss previously defeated in this world with `Allow defeated bosses = true`. It should work for both inventory and item-stand altars. Set the host option to `false`; the same boss should now be blocked even if the client's option is `true`.
+6. Repeat on a dedicated server and at a distant altar, then connect to another world where the boss has not been defeated. It should be restricted again.

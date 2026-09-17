@@ -5,10 +5,17 @@ internal sealed class BossRestrictionState
     public bool IsReady { get; private set; }
     public int RequiredPlayers { get; private set; }
     public int OnlinePlayers { get; private set; }
-    public bool AllowsBosses => IsReady && (RequiredPlayers == 0 || OnlinePlayers >= RequiredPlayers);
+    public bool AllowDefeatedBosses { get; private set; }
+
+    // checks the player requirement and the optional world-defeat exemption
+    public bool AllowsSummoning(bool defeatedInWorld)
+    {
+        return IsReady && (RequiredPlayers == 0 || OnlinePlayers >= RequiredPlayers ||
+            (AllowDefeatedBosses && defeatedInWorld));
+    }
 
     // stores a validated snapshot from the host
-    public void Set(int requiredPlayers, int onlinePlayers)
+    public void Set(int requiredPlayers, int onlinePlayers, bool allowDefeatedBosses)
     {
         if (requiredPlayers < 0 || onlinePlayers < 0)
         {
@@ -17,6 +24,7 @@ internal sealed class BossRestrictionState
 
         RequiredPlayers = requiredPlayers;
         OnlinePlayers = onlinePlayers;
+        AllowDefeatedBosses = allowDefeatedBosses;
         IsReady = true;
     }
 
@@ -26,5 +34,6 @@ internal sealed class BossRestrictionState
         IsReady = false;
         RequiredPlayers = 0;
         OnlinePlayers = 0;
+        AllowDefeatedBosses = false;
     }
 }
