@@ -1,6 +1,6 @@
 # Spawn Restrictions
 
-Spawn Restrictions adds a player-count requirement to boss summoning at altars in Valheim. Summoning is blocked until enough players are online. Existing bosses and ongoing fights are unaffected.
+Spawn Restrictions adds a configurable player-count requirement to boss summoning at altars in Valheim. Summoning is blocked until enough players are online. Existing bosses and ongoing fights are unaffected.
 
 Install the same version on the host or dedicated server and every client. The host or server controls the active settings.
 
@@ -21,21 +21,13 @@ Use `0` to disable restrictions. A host player counts as an online player, but a
 
 ## Use
 
-1. Copy `mod/BepInEx/plugins/SpawnRestrictions.dll` to `BepInEx/plugins/` on the host or server and every client.
+1. Install this package with r2modman/Thunderstore, or copy its contents into the Valheim game directory.
 2. Launch once to generate the configuration file.
 3. Edit the host or server settings and restart.
 4. Summon bosses at altars as usual.
 
 When the requirement is met, summoning works normally. When it is not met, the summon is blocked and a message explains the requirement.
 
-## Build from source
+## Source
 
-Requires a .NET SDK, Valheim, and BepInEx 5. Build from the repository root and provide the paths to your Valheim managed assemblies and BepInEx core files:
-
-```powershell
-dotnet build SpawnRestrictions.csproj -c Release `
-  -p:ValheimManagedDir='C:\Path\to\Valheim\valheim_Data\Managed' `
-  -p:BepInExCoreDir='C:\Path\to\BepInEx\core'
-```
-
-The pre-commit hook copies the release build to `mod/BepInEx/plugins/SpawnRestrictions.dll`; install that file using the steps above.
+[Source code and issue tracker](https://github.com/Mykol-Word/spawn-restrictions-valheim)

@@ -1,0 +1,9 @@
+﻿{
+  "name": "SpawnRestrictions",
+  "version_number": "0.2.0",
+  "website_url": "https://github.com/Mykol-Word/spawn-restrictions-valheim",
+  "description": "Adds a configurable minimum online-player requirement for boss summoning at altars in Valheim.",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2350"
+  ]
+}
